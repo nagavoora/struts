@@ -17,10 +17,14 @@
 */
 package org.superbiz.struts;
 
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import java.util.Properties;
 
+@Component
 public class AddUser {
 
     private int id;
@@ -60,15 +64,18 @@ public class AddUser {
         this.id = id;
     }
 
+
+    private final UserService service;
+    public AddUser(UserService service) {
+        this.service = service;
+    }
+
+
+
+    @Transactional
     public String execute() {
 
         try {
-            UserService service = null;
-            Properties props = new Properties();
-            props.put(Context.INITIAL_CONTEXT_FACTORY,
-                "org.apache.openejb.core.LocalInitialContextFactory");
-            Context ctx = new InitialContext(props);
-            service = (UserService) ctx.lookup("UserServiceImplLocal");
             service.add(new User(id, firstName, lastName));
         } catch (Exception e) {
             this.errorMessage = e.getMessage();
